@@ -165,4 +165,63 @@ end
       expect(response).to have_http_status(:not_found)
     end
   end
+
+  describe "it can UPDATE coupons" do
+    it "can update coupons when givin correct information" do 
+      merchant = Merchant.create!(name: "Test Merchant")
+      coupon = merchant.coupons.create!(name: "Buy One Get One 50", coupon_code: "BOGO50", value: 10.00, status: "active")
+      name = "Buy One Get One 984"
+      coupon_code = "BOGOFAIL"
+      value = 10.00
+      status = "active"
+      body = {
+        name: name,
+        coupon_code: coupon_code,
+        value: value,
+        status: status
+      }
+      patch"/api/v1/merchants/#{merchant.id}/coupons/#{coupon.id}", params: body, as: :json
+      updated = JSON.parse(response.body, symbolize_names: true)
+
+      expect(updated[:data][:attributes][:name]).to eq("Buy One Get One 984")
+    end
+
+    it "can show an ERROR when invalid Merchant is givin" do
+      merchant = Merchant.create!(name: "Test Merchant")
+      coupon = merchant.coupons.create!(name: "Buy One Get One 50", coupon_code: "BOGO50", value: 10.00, status: "active")
+      name = "Buy One Get One 984"
+      coupon_code = "BOGOFAIL"
+      value = 10.00
+      status = "active"
+      body = {
+        name: name,
+        coupon_code: coupon_code,
+        value: value,
+        status: status
+      }
+      patch"/api/v1/merchants/30000/coupons/#{coupon.id}", params: body, as: :json
+      updated = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "can show an ERROR when invalid Coupon is givin" do
+      merchant = Merchant.create!(name: "Test Merchant")
+      coupon = merchant.coupons.create!(name: "Buy One Get One 50", coupon_code: "BOGO50", value: 10.00, status: "active")
+      name = "Buy One Get One 984"
+      coupon_code = "BOGOFAIL"
+      value = 10.00
+      status = "active"
+      body = {
+        name: name,
+        coupon_code: coupon_code,
+        value: value,
+        status: status
+      }
+      patch"/api/v1/merchants/#{merchant.id}/coupons/300", params: body, as: :json
+      updated = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
 end
