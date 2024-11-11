@@ -43,4 +43,14 @@ class Merchant < ApplicationRecord
   def self.find_one_merchant_by_name(name)
     Merchant.find_all_by_name(name).order("LOWER(name)").first
   end
+
+
+  def self.has_five_active_coupons?(merchant_id)
+    Merchant.where(id: merchant_id)
+            .joins(:coupons)
+            .where(coupons: { status: 'active' })
+            .group('merchants.id')
+            .having('COUNT(coupons.id) >= 5')
+            .exists?
+  end  
 end

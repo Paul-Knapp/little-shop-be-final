@@ -30,6 +30,7 @@ Rails.application.routes.draw do
         collection do 
           resources :get, only: [:index, :show]
           resources :post, only: [:create]
+          resources :patch, only: [:update]
         end
       end
     end
