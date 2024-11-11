@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       resources :coupons, only: [:show] do 
         collection do 
           resources :get, only: [:index, :show]
+          resources :post, only: [:create]
         end
       end
     end
