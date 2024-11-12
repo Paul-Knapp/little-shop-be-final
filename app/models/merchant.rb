@@ -52,5 +52,13 @@ class Merchant < ApplicationRecord
             .group('merchants.id')
             .having('COUNT(coupons.id) >= 5')
             .exists?
-  end  
+  end 
+
+  def coupon_count
+    coupons.count
+  end
+
+  def invoice_count
+    invoices.count
+  end
 end
