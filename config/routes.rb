@@ -24,9 +24,14 @@ Rails.application.routes.draw do
         resources :items, only: :index, controller: "merchants/items"
         resources :customers, only: :index, controller: "merchants/customers"
         resources :invoices, only: :index, controller: "merchants/invoices"
-        resources :coupons
+        resources :coupons do
+          collection do 
+            get 'active'
+            get 'inactive'
+          end
+        end
       end
-      resources :coupons, only: [:show] do 
+      resources :coupons do 
         collection do 
           resources :get, only: [:index, :show]
           resources :post, only: [:create]
