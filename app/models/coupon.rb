@@ -4,6 +4,9 @@ class Coupon < ApplicationRecord
     validates :value, presence: true, numericality: { greater_than: 0}
     validates :status, presence: true, inclusion: { in: [ "active", "inactive"]}
     belongs_to :merchant
-    has_many :invoice_coupons
-    has_many :invoices, through: :invoice_coupons
+    has_many :invoices
+
+    def usage_count
+        invoices.count
+    end
 end
