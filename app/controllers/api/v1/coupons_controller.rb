@@ -1,10 +1,20 @@
 class Api::V1::CouponsController < ApplicationController
+
   def index
-    merchant = Merchant.find(params[:merchant_id])
-    coupons = merchant.coupons
+    coupons = filter_coupons(get_coupons, params[:status])
     render json: CouponSerializer.new(coupons)
   end
 
+  def active 
+    coupons = filter_coupons(get_coupons, 'active')
+    render json: CouponSerializer.new(coupons)
+  end
+
+  def inactive 
+    coupons = filter_coupons(get_coupons, 'inactive')
+    render json: CouponSerializer.new(coupons)
+  end
+  
   def create
     merchant = Merchant.find(params[:merchant_id])
     
@@ -19,7 +29,7 @@ class Api::V1::CouponsController < ApplicationController
   def show 
     merchant = Merchant.find(params[:merchant_id])
     coupon = merchant.coupons.find(params[:id])
-    render json: CouponSerializer.new(coupon)
+    render json: CouponSerializer.new(coupon, { params: {include_usage_count: true}})
   end
 
   def update 
@@ -34,9 +44,28 @@ class Api::V1::CouponsController < ApplicationController
       render json: CouponSerializer.new(coupon), status: :ok
   end
 
-    private
+  private
 
-    def coupon_params
-        params.permit(:name, :coupon_code, :value, :status, :merchant_id)
+  def coupon_params
+    params.permit(:name, :coupon_code, :value, :status, :merchant_id)
+  end
+
+  def get_coupons
+    if params[:merchant_id]
+      Merchant.find(params[:merchant_id]).coupons
+    else
+      Coupon.all
     end
+  end
+
+  def filter_coupons(coupons, status)
+    case status
+    when 'active'
+      coupons.where(status: 'active')
+    when 'inactive'
+      coupons.where(status: 'inactive')
+    else
+      coupons
+    end
+  end
 end
