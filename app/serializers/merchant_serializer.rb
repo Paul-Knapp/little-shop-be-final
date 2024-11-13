@@ -7,4 +7,12 @@ class MerchantSerializer
   } do |merchant|
     merchant.item_count
   end
+
+  attribute :coupon_count do |merchant|
+    merchant.coupon_count
+  end
+
+  attribute :invoice_count do |merchant|
+    merchant.invoice_count
+  end
 end
