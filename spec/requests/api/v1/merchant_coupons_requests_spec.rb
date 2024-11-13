@@ -224,4 +224,24 @@ end
       expect(response).to have_http_status(:not_found)
     end
   end
+
+  describe "merchant can sort coupons by Query Param" do 
+    it "can sort when giving query parameters" do
+      merchant = Merchant.create!(name: "Test Merchant")
+      coupon = merchant.coupons.create!(name: "Buy One Get One 50", coupon_code: "BOG50", value: 0.50, status: "active")
+      coupon = merchant.coupons.create!(name: "Buy One Get One 30", coupon_code: "BOGO30", value: 0.30, status: "inactive")
+  
+      get "/api/v1/merchants/#{merchant.id}/coupons/active"
+  
+      expect(response).to have_http_status(:ok)
+      json1 = JSON.parse(response.body, symbolize_names: true)
+      expect(json1[:data][0][:attributes][:name]).to eq("Buy One Get One 50")
+  
+      get "/api/v1/merchants/#{merchant.id}/coupons/inactive"
+  
+      expect(response).to have_http_status(:ok)
+      json2 = JSON.parse(response.body, symbolize_names: true)
+      expect(json2[:data][0][:attributes][:name]).to eq("Buy One Get One 30")
+    end
+  end
 end
